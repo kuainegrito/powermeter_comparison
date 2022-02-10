@@ -35,7 +35,7 @@ magene_df <- data.frame(
 
 assioma_extract <- list()
 
-pb = timerProgressBar(min = 1, max = length(sep_assioma), initial = 1, width = 20)
+pb = pbapply::timerProgressBar(min = 1, max = length(sep_assioma), initial = 1, width = 20)
 for (i in 1:length(sep_assioma)) { # where "---" begins
   j <- sep_assioma[i] + 1
   df <- data.frame(power = NA, hr = NA, time = NA)
@@ -48,7 +48,7 @@ for (i in 1:length(sep_assioma)) { # where "---" begins
   }
 
 
-  setTimerProgressBar(pb, i)
+  pbapply::setTimerProgressBar(pb, i)
 }
 
 assioma_par <- do.call( rbind.data.frame, assioma_extract)
@@ -57,7 +57,7 @@ assioma_par <- do.call( rbind.data.frame, assioma_extract)
 
 magene_extract <- list()
 
-pb = timerProgressBar(min = 1, max = length(sep_magene), initial = 1, width = 20)
+pb = pbapply::timerProgressBar(min = 1, max = length(sep_magene), initial = 1, width = 20)
 for (i in 1:length(sep_magene)) { # where "---" begins
   j <- sep_magene[i] + 1
   df <- data.frame(power = NA, hr = NA, time = NA)
@@ -70,18 +70,23 @@ for (i in 1:length(sep_magene)) { # where "---" begins
   }
   
   
-  setTimerProgressBar(pb, i)
+  pbapply::setTimerProgressBar(pb, i)
 }
 
 magene_par <- do.call( rbind.data.frame, magene_extract)
 
 
 
+# matrix alignment
+
+
+magene_par <- magene_par[which(magene_par$time %in% intersect(magene_par$time, assioma_par$time)),]
+
+assioma_par <- assioma_par[which(assioma_par$time %in% intersect(magene_par$time, assioma_par$time)),]
+
+
 # add lap info
-
 magene_par$lap <- seq(1:nrow(magene_par)) 
-
-assioma_par <- assioma_par[7:nrow(assioma_par),] # time difference 6 sec
 assioma_par$lap <- seq(1:nrow(assioma_par))
 
 fin <- 
